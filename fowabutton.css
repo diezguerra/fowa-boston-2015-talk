@@ -1,0 +1,38 @@
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font: 13px Helvetica, Arial }
+  .container {
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 30px;
+  }
+  h1 { font-size: 80px; }
+  button {
+    width: 600px;
+    font-size: 150px;
+    background: #ff8400;
+    color: #eee;
+    padding: 0 100px 0 100px;
+    margin: 50px;
+  }
+  button:hover {
+    background: #ff9c34;
+  }
+  #ranking {
+    font-size: 18px;
+    margin: 20px;
+  }
+  table {
+    width: 300px;
+    margin: 0 auto;
+  }
+  tr, th, td {
+    text-align: center;
+    padding: 3px;
+  }
+  tr > th {
+    background: #eee;
+  }
+  #count {
+    color: white;
+    background: white;
+}

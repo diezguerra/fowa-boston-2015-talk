@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <title>The FOWA button</title>
+    <link rel="stylesheet" href="fowabutton.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>The
+        <svg xmlns="http://www.w3.org/2000/svg" width="70" viewBox="0 123.305 595.28 595.28">
+          <path d="M297.64 123.305c-164.381 0-297.64 133.259-297.64 297.64 0 66.183 21.632 127.295 58.171 176.737l264.02-264.268h-108.45c-72.708 0-67.112-95.566-67.112-95.566h175.334c163.166 0 163.166 158.309 163.166 158.309v180.906c-96.78 0-94.852-59.089-94.852-59.089v-116.959l-263.97 263.245c48.455 34.182 107.531 54.325 171.333 54.325 164.381 0 297.64-133.259 297.64-297.64s-133.259-297.64-297.64-297.64z"></path>
+        </svg>
+        button!
+      </h1>
+      <button id="clicker">-1</button>
+      <h2>Ranking</h2>
+      <div id="ranking">
+        We don't have a ranking yet :(
+      </div>
+      <div id="count"></div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+      // We keep track of the interval that's continuously updating the local counter
+      var interval = null;
+
+      // This function resets the local counter when new updates arrive
+      var resetInterval = function resetInterval(timer) {
+        if(interval) clearInterval(interval);
+        interval = setInterval(function(){
+          var count = (60 - (new Date().getTime() - timer) / 1000).toFixed(1);
+          if(count > 0) {
+            $("#clicker").text(count + 's');
+          } else {
+            $("#clicker").text("OMG");
+          }
+        }, 100);
+      }
+
+      // This rebuilds the ranking table, every time.
+      var redrawRanking = function redrawRanking(ranking) {
+        if(ranking.length < 1) return;
+
+        $("#ranking").html('');
+        var tds = $('<table></table>');
+        tds.append($('<tr></tr>').append('<th>Player</th><th>Score</th>'));
+        for(var player in ranking) {
+          tds.append($('<tr></tr>').append(
+            '<td>' + ranking[player].player + '</td>' +
+            '<td>' + ranking[player].record + 's</td>'));
+        }
+        $("#ranking").append(tds);
+      }
+
+      /* On load, we ask for name, instantiate the socket.io connection
+         and place an event listener on the socket and a click listener on
+         the button */
+      $(function() {
+        var player = prompt("What's your name?");
+        var socket = io();
+
+        socket.on("timer", function(data) {
+          console.log("Timer received", data);
+          resetInterval(data.timer);
+          redrawRanking(data.ranking);
+          $("#count").html(data.clientsCount);
+        });
+        $("#clicker").click(function(){
+          socket.emit("click", {player: player});
+        });
+      });
+    </script>
+  </body>
+</html>
